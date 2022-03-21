@@ -1,4 +1,4 @@
-(ns util
+(ns com.widdindustries.tiadough-cljs2
   (:require [clojure.java.io :as io]
             [clojure.pprint :as pprint]
             [shadow.cljs.devtools.api :as api]
@@ -14,25 +14,27 @@
 (def dev-server-port 9000)
 (def funnel-port 9010)
 (def funnel-uri (str "ws://localhost:" funnel-port))
+(def shadow-local (str "http://localhost:" dev-server-port))
+(def test-url (str shadow-local "/browser-test"))
 
 (defonce funnel-server nil)
 
 (defn stop-funnel []
-  (when funnel-server 
+  (when funnel-server
     (.close funnel-server)
     (alter-var-root #'funnel-server (constantly nil))))
 
 (defn start-funnel []
   (System/setProperty "lambdaisland.funnel.uri" funnel-uri)
   (if (and funnel-server @funnel-server)
-    nil 
+    nil
     (when-let [server (funnel/start-server (funnel/websocket-server
                                              {:state (atom {})
                                               :port funnel-port}))]
       (funnel/init-logging 1 nil)
       (alter-var-root #'funnel-server (constantly server)))))
 
-(def server-config 
+(def server-config
   (merge config/default-config
     {:deps     {:aliases [:client :dev]}
      :http     {:port 9020}
@@ -51,14 +53,14 @@
 
 (defn start-server
   ([] (start-server {}))
-  ([opts] 
+  ([opts]
    (npm-i)
    (server/start! (merge server-config opts))
    (start-funnel)))
 
 (defn restart-server
   ([] (restart-server {}))
-  ([opts] 
+  ([opts]
    (stop-server)
    (start-server opts)))
 
@@ -77,7 +79,7 @@
    :closure-defines {}
    :devtools        {:watch-dir "web-target/public"
                      :preloads  (cond-> []
-                                   (cljs-ns-available? 'devtools.preload)
+                                  (cljs-ns-available? 'devtools.preload)
                                   (conj 'devtools.preload))}
    :asset-path "/cljs-out"})
 
@@ -95,7 +97,7 @@
 (defn clean-shadow-cache []
   (clean-dir ".shadow-cljs/builds"))
 
-(defn prod-build 
+(defn prod-build
   ([build]
    (prod-build build {:source-maps true}))
   ([build opts]
@@ -105,7 +107,7 @@
    (api/release* build opts)
    nil))
 
-(defn watch 
+(defn watch
   ([build] (watch build {}))
   ([build opts]
    (start-server opts)
@@ -116,15 +118,15 @@
 (defn stop-watch [build]
   (api/stop-worker (get build :build-id build)))
 
-(defn repl 
+(defn repl
   ([] (repl :app-dev))
   ([build-name]
    (api/repl build-name)))
 
 (defn browser-test-config []
-  {:build-id :browser-test-build 
-   :target :browser-test 
-   :runner-ns 'kaocha.cljs2.shadow-runner 
+  {:build-id :browser-test-build
+   :target :browser-test
+   :runner-ns 'kaocha.cljs2.shadow-runner
    :test-dir "web-target/public/browser-test"
    :asset-path "/browser-test/js"
    :build-options {}
@@ -135,7 +137,7 @@
               }})
 
 (def compile-fns
-  {:watch watch 
+  {:watch watch
    :once api/compile*
    :release api/release*})
 
@@ -152,15 +154,48 @@
     )
   ((get compile-fns compile-mode)
    (browser-test-config) opts)
-  )
+  (println "for tests, open " test-url))
 
-(defn run-tests-headless* [compile-mode]
-  ;kill js runtimes
+(defn run-tests []
+  (kaocha.repl/run
+    :browser-tests
+    #:kaocha{:tests
+             [#:kaocha.testable{:id   :browser-tests
+                                :type :kaocha.type/cljs2}]}))
+
+(def ^:dynamic *chrome-command*
+  (case (System/getProperty "os.name")
+    "Mac OS X" "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
+    "chrome"))
+
+(defn chrome-headless-proc [url]
+  (let [[cmd opts] (#'sh/parse-args [*chrome-command* "--disable-gpu"
+                                "--remote-debugging-socket-fd=0"
+                                "--headless" "--remote-debugging-port=0"
+                                "--no-sandbox" "--enable-logging"
+                                url])]
+    (.exec (Runtime/getRuntime)
+      ^"[Ljava.lang.String;" (into-array cmd)
+      (#'sh/as-env-strings (:env opts))
+      (io/as-file (:dir opts)))))
+
+(defn compile-and-run-tests-headless* [compile-mode]
   (start-server)
   (browser-test-build compile-mode {})
-  ; invoke js env - giving it url or js etc
-  (kaocha.repl/run :browser-tests {})
-  )
+  (let [chrome (chrome-headless-proc test-url)]
+    (Thread/sleep 2000)
+    (try
+      (run-tests)
+      (finally
+        (println "killing pid " (.pid chrome))
+        (.destroyForcibly chrome)))))
+
+(defn tests-ci [compile-mode]
+  (let [result (compile-and-run-tests-headless* compile-mode)]
+    (when (or (some pos? ((juxt :kaocha.result/error :kaocha.result/fail :kaocha.result/pending)
+                          result)))
+      (System/exit 1))))
+
 
 
 

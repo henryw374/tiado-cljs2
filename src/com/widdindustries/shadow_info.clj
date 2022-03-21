@@ -1,4 +1,4 @@
-(ns shadow-info
+(ns com.widdindustries.shadow-info
   (:require [shadow.cljs.devtools.server.runtime :as runtime]
             [shadow.cljs.devtools.server.npm-deps :as npm-deps]))
 
