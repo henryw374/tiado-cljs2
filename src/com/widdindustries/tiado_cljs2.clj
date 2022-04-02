@@ -201,7 +201,7 @@
     (System/exit 1)
     (System/exit 0)))
 
-(defn tests-ci-shadow [compile-mode]
+(defn tests-ci-shadow [{:keys [compile-mode]}]
   (start-server)
   (browser-test-build compile-mode {})
   (try
