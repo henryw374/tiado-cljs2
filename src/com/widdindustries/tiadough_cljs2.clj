@@ -157,11 +157,18 @@
   (println "for tests, open " test-url))
 
 (defn run-tests []
-  (kaocha.repl/run
-    :browser-tests
-    #:kaocha{:tests
-             [#:kaocha.testable{:id   :browser-tests
-                                :type :kaocha.type/cljs2}]}))
+  (let [result-fut
+        (future
+          (kaocha.repl/run
+            ;todo - add timeout
+            :browser-tests
+            #:kaocha{:tests
+                     [#:kaocha.testable{:id   :browser-tests
+                                        :type :kaocha.type/cljs2}]}))
+        result (deref result-fut 10000 ::timeout)]
+    (if (= ::timeout result)
+      (throw (Exception. "timeout waiting for test result"))
+      result)))
 
 (def ^:dynamic *chrome-command*
   (case (System/getProperty "os.name")
@@ -179,21 +186,28 @@
       (#'sh/as-env-strings (:env opts))
       (io/as-file (:dir opts)))))
 
-(defn compile-and-run-tests-headless* [compile-mode]
-  (start-server)
-  (browser-test-build compile-mode {})
+(defn compile-and-run-tests-headless* []
   (let [chrome (chrome-headless-proc test-url)]
     (Thread/sleep 2000)
     (try
       (run-tests)
       (finally
-        (println "killing pid " (.pid chrome))
+        ;(println "killing pid " (.pid chrome))
         (.destroyForcibly chrome)))))
 
-(defn tests-ci [compile-mode]
-  (let [result (compile-and-run-tests-headless* compile-mode)]
-    (when (or (some pos? ((juxt :kaocha.result/error :kaocha.result/fail :kaocha.result/pending)
-                          result)))
+(defn kaocha-exit-if-fail [result]
+  (if (or (some pos? ((juxt :kaocha.result/error :kaocha.result/fail :kaocha.result/pending)
+                      result)))
+    (System/exit 1)
+    (System/exit 0)))
+
+(defn tests-ci-shadow [compile-mode]
+  (start-server)
+  (browser-test-build compile-mode {})
+  (try
+    (kaocha-exit-if-fail (compile-and-run-tests-headless*))
+    (catch Exception e 
+      (println e)
       (System/exit 1))))
 
 

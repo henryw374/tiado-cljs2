@@ -1,0 +1,5 @@
+{:paths   ["src"]
+ :aliases {:dev {:extra-deps  
+                 {com.widdindustries/tiadough { ; could have this in alias in .clojure/deps.edn
+                                                            :local/root "../.."}}
+                 :extra-paths ["dev" "test" "web-target"]}}} 

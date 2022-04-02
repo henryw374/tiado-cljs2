@@ -15,5 +15,6 @@
   ; run tests in headless browser
   (util/compile-and-run-tests-headless* :release)
   
+  (util/stop-server)
 
   )

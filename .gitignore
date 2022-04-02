@@ -1,8 +1,10 @@
 .cpcache
 .idea
+.clj-kondo
 .shadow-cljs
 node_modules
-web-target
+web-target/public/*
+browser-test
 .nrepl-port
 package.json
 package-lock.json
