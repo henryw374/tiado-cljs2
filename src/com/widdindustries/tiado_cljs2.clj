@@ -1,4 +1,4 @@
-(ns com.widdindustries.tiadough-cljs2
+(ns com.widdindustries.tiado-cljs2
   (:require [clojure.java.io :as io]
             [clojure.pprint :as pprint]
             [shadow.cljs.devtools.api :as api]

@@ -21,18 +21,6 @@
        :output-to     (str "web-target/" build-name "/main.js")}
       (merge opts))))
 
-(defn html-to-serve-tests [build-name]
-  (spit (str "web-target/" build-name "/index.html")
-    (str "<!DOCTYPE html>
-    <html><head>
-    <title>kaocha.cljs2.shadow-runner</title>
-    <meta charset=\"utf-8\">
-    </head>
-    <body>
-    <script src=\"" build-name "/main.js"  "\"></script><script>kaocha.cljs2.shadow_runner.init();</script></body></html>")
-    )
-  )
-
 (comment
   (build)
   )
