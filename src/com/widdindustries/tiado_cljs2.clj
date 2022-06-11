@@ -40,11 +40,10 @@
      :http     {:port 9020}
      :dev-http {dev-server-port
                 {:root "classpath:public"}}
-     ;todo - devcards bits
      }))
 
-(defn npm-i []
-  (npm-deps/main server-config {})
+(defn npm-i [opts]
+  (npm-deps/main opts {})
   (sh/sh "npm" "i"))
 
 (defn stop-server []
@@ -54,9 +53,10 @@
 (defn start-server
   ([] (start-server {}))
   ([opts]
-   (npm-i)
-   (server/start! (merge server-config opts))
-   (start-funnel)))
+   (let [server-config (merge server-config opts)]
+     (npm-i server-config)
+     (server/start! server-config)
+     (start-funnel))))
 
 (defn restart-server
   ([] (restart-server {}))
@@ -72,16 +72,18 @@
       (str ".cljs")
       (io/resource)))
 
-(defn browser-app-config []
+(defn browser-app-config [& {:keys [watch-dir asset-path]
+                             :or {watch-dir "web-target/public"
+                                  asset-path "/cljs-out"}}]
   {:build-id        :app-dev
    :target          :browser
-   :output-dir      "web-target/public/cljs-out"
+   :output-dir      (str watch-dir asset-path)
    :closure-defines {}
-   :devtools        {:watch-dir "web-target/public"
+   :devtools        {:watch-dir watch-dir
                      :preloads  (cond-> []
                                   (cljs-ns-available? 'devtools.preload)
                                   (conj 'devtools.preload))}
-   :asset-path "/cljs-out"})
+   :asset-path asset-path})
 
 (defn clean-dir [d]
   (sh/sh "rm" "-rf" d))
@@ -126,6 +128,7 @@
 (defn browser-test-config []
   {:build-id :browser-test-build
    :target :browser-test
+   :compiler-options {:data-readers true}
    :runner-ns 'kaocha.cljs2.shadow-runner
    :test-dir "web-target/public/browser-test"
    :asset-path "/browser-test/js"
