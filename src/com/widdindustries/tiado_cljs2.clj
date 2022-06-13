@@ -5,7 +5,8 @@
             [shadow.cljs.devtools.server :as server]
             [shadow.cljs.devtools.server.npm-deps :as npm-deps]
             [shadow.cljs.build-report :as build-report]
-            [clojure.java.shell :as sh]
+    ;[clojure.java.shell :as sh]
+            [babashka.process :as process]
             [lambdaisland.funnel :as funnel]
             [shadow.cljs.devtools.config :as config]
             [kaocha.repl]
@@ -44,7 +45,7 @@
 
 (defn npm-i [opts]
   (npm-deps/main opts {})
-  (sh/sh "npm" "i"))
+  @(process/process ["npm" "i"]))
 
 (defn stop-server []
   (stop-funnel)
@@ -86,7 +87,7 @@
    :asset-path asset-path})
 
 (defn clean-dir [d]
-  (sh/sh "rm" "-rf" d))
+  (process/check (process/process ["rm" "-rf" d])))
 
 (defn clean-npm []
   (clean-dir "node_modules"))
@@ -163,7 +164,6 @@
   (let [result-fut
         (future
           (kaocha.repl/run
-            ;todo - add timeout
             :browser-tests
             #:kaocha{:tests
                      [#:kaocha.testable{:id   :browser-tests
@@ -178,25 +178,35 @@
     "Mac OS X" "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
     "chrome"))
 
+#_(defn kill-chromes []
+  (sh/sh "killall" "-9" "chrome"))
+
 (defn chrome-headless-proc [url]
-  (let [[cmd opts] (#'sh/parse-args [*chrome-command* "--disable-gpu"
-                                "--remote-debugging-socket-fd=0"
-                                "--headless" "--remote-debugging-port=0"
-                                "--no-sandbox" "--enable-logging"
-                                url])]
-    (.exec (Runtime/getRuntime)
-      ^"[Ljava.lang.String;" (into-array cmd)
-      (#'sh/as-env-strings (:env opts))
-      (io/as-file (:dir opts)))))
+  #_(apply sh/sh 
+    [*chrome-command* "--disable-gpu"
+     "--remote-debugging-socket-fd=0"
+     ;"--headless" 
+     "--remote-debugging-port=0"
+     "--no-sandbox" "--enable-logging=stderr" "--v=1"
+     url])
+  (process/process [*chrome-command* "--disable-gpu"
+               "--remote-debugging-socket-fd=0"
+               "--headless" 
+               "--remote-debugging-port=0"
+               "--no-sandbox" "--enable-logging=stderr" "--v=1"
+               url]
+    {:out *out*
+     :err *out*}))
 
 (defn compile-and-run-tests-headless* []
-  (let [chrome (chrome-headless-proc test-url)]
+  (let [proc (chrome-headless-proc test-url)]
     (Thread/sleep 2000)
     (try
       (run-tests)
       (finally
         ;(println "killing pid " (.pid chrome))
-        (.destroyForcibly chrome)))))
+        (process/destroy proc)
+        ))))
 
 (defn kaocha-exit-if-fail [result]
   (if (or (some pos? ((juxt :kaocha.result/error :kaocha.result/fail :kaocha.result/pending)

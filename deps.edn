@@ -8,6 +8,7 @@
            lambdaisland/chui-remote  {:mvn/version "1.1.192"}
            lambdaisland/chui-ui      {:mvn/version "1.1.192"}
            lambdaisland/funnel       {:mvn/version "1.4.71"}
-           binaryage/devtools        {:mvn/version "1.0.5"}}
+           binaryage/devtools        {:mvn/version "1.0.5"}
+           babashka/process          {:mvn/version "0.1.2"}}
  :aliases {:dev {:extra-paths ["test"]}}}
 
