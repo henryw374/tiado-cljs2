@@ -213,7 +213,9 @@
       (System/exit 1))))
 
 (defn build-report [build file-name]
-  (build-report/generate build file-name))
+  (build-report/generate build
+    {:report-file file-name
+     :inline true}))
 
 
 
