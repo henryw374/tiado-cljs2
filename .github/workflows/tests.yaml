@@ -30,4 +30,4 @@ jobs:
         run: cd examples/a-cljs-app && make test-cljs-shadow && cd -        
         
       - name: Run example lib tests
-        run: cd examples/a-cljs-lib && make test-cljs-shadow && cd -        
+        run: cd examples/a-cljs-library && make test-cljs-shadow && cd -        
