@@ -4,22 +4,24 @@
 
 Managing multiple Clojurescript builds, either apps, libraries or both can be tricky if each one has its own config. There may well need to be differences across builds, but in many
 cases the actual differences will be small, but buried amongst other boilerplate and hard to see. Additionally
-as build tools and Clojurescript itself change over time, each requires individual effort to update.
+as tools, libraries and preferences change over time, each requires individual effort to update.
 
-This project uses those and
+Shadow-cljs and Kaocha-Cljs2 are currently my preferred tools for Clojurescript web development. This project uses those and
 just adds a bit of glue to make a portable build/test/deploy setup for easy setup and maintenance. This gets more useful the more builds under management.
 
-Shadow-cljs and Kaocha-Cljs2 are currently my preferred tools for Clojurescript web development.
-
-These both offer comprehensive CLI tools. Personally I rarely want that flexibility at the
+Both Shadow-cljs and kaocha offer comprehensive CLI tools. Personally I rarely want that flexibility at the
 command line when using them. A REPL is fine when developing, and using Clojure tools.deps I can execute required build/test functions at CI stage. As a result of that, this setup uses no `shadow-cljs.edn` file or Kaocha `tests.edn` file: all config is done in Clojure code. This is hany for portability, but also for dynamic changes. For example, Kaocha-cljs requires
 that a port number is referred to from 3 separate places. If that port needs settting, with code rather than config files, it is just done in one place.
+
+This project can be used as-is or just as inspiration or a starter template for your builds. For example I used to use a similar no-config-file setup with Figwheel. 
+
+It is quite common that I come across Cljs libraries on Github with no running CI or even tests that I can run locally. I don't know but maybe it has been too much effort to set up... this project might help there.
 
 # Usage
 
 See examples dir for:
 
-* an example cljs lib with Github actions setup.
+* an example cljs lib with `Github Actions` setup.
 * an example cljs app with test, devcards and release build setup 
 
 ## Setup
