@@ -6,4 +6,4 @@
   (:config (runtime/get-instance!)))
 
 (defn show-npm-deps []
-  (clojure.pprint/print-table (npm-deps/get-deps-from-classpath)))
+  (clojure.pprint/print-table (sort-by :id (npm-deps/get-deps-from-classpath))))

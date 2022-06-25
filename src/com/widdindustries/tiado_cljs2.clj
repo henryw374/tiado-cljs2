@@ -137,8 +137,7 @@
    :closure-defines {'lambdaisland.funnel-client/FUNNEL_URI funnel-uri}
    :devtools {:preloads (cond-> ['lambdaisland.chui.remote ]
                           (cljs-ns-available? 'devtools.preload)
-                          (conj 'devtools.preload))
-              }})
+                          (conj 'devtools.preload))}})
 
 (def compile-fns
   {:watch watch
@@ -178,17 +177,7 @@
     "Mac OS X" "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
     "chrome"))
 
-#_(defn kill-chromes []
-  (sh/sh "killall" "-9" "chrome"))
-
 (defn chrome-headless-proc [url]
-  #_(apply sh/sh 
-    [*chrome-command* "--disable-gpu"
-     "--remote-debugging-socket-fd=0"
-     ;"--headless" 
-     "--remote-debugging-port=0"
-     "--no-sandbox" "--enable-logging=stderr" "--v=1"
-     url])
   (process/process [*chrome-command* "--disable-gpu"
                "--remote-debugging-socket-fd=0"
                "--headless" 
@@ -223,6 +212,8 @@
       (println e)
       (System/exit 1))))
 
+(defn build-report [build file-name]
+  (build-report/generate build file-name))
 
 
 
