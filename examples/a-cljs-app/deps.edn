@@ -1,5 +1,6 @@
-{:paths   ["src"]
+{:paths   ["resources" "src"]
  :aliases {:dev {:extra-deps  
-                 {com.widdindustries/tiadough { ; could have this in alias in .clojure/deps.edn
-                                                            :local/root "../.."}}
+                 {com.widdindustries/tiado-cljs2 { ; could have this in alias in .clojure/deps.edn
+                                                            :local/root "../.."}
+                  reagent/reagent {:mvn/version "1.1.1"}}
                  :extra-paths ["dev" "test" "web-target"]}}} 

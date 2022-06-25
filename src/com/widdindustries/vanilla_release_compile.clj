@@ -1,5 +1,7 @@
 (ns com.widdindustries.vanilla-release-compile
-  "fns to do non-shadow compilation - handy for lib testing"
+  "WIP - doesnt work yet
+  
+  fns to do non-shadow compilation - handy for lib testing"
   (:require [cljs.build.api :as cljs]))
 
 (defn browse []
