@@ -2,27 +2,26 @@
 
 # ready-made Shadow-cljs and Kaocha-Cljs2 setup
 
-Managing multiple Clojurescript builds, either apps, libraries or both can be tricky if each one has its own config. There may well need to be differences across builds, but in many
-cases the actual differences will be small, but buried amongst other boilerplate and hard to see. Additionally
-as tools, libraries and preferences change over time, each requires individual effort to update.
+Managing multiple Clojurescript builds (whether apps or libraries) can be tricky if each one has its own config. There may well need to be differences across builds, but it may be that the actual differences are small, but buried amongst other boilerplate and hard to see. Additionally
+as tools, libraries and preferences change over time, each build requires individual effort to update.
 
 Shadow-cljs and Kaocha-Cljs2 are currently my preferred tools for Clojurescript web development. This project uses those and
 just adds a bit of glue to make a portable build/test/deploy setup for easy setup and maintenance. This gets more useful the more builds under management.
 
 Both Shadow-cljs and kaocha offer comprehensive CLI tools. Personally I rarely want that flexibility at the
-command line when using them. A REPL is fine when developing, and using Clojure tools.deps I can execute required build/test functions at CI stage. As a result of that, this setup uses no `shadow-cljs.edn` file or Kaocha `tests.edn` file: all config is done in Clojure code. This is hany for portability, but also for dynamic changes. For example, Kaocha-cljs requires
-that a port number is referred to from 3 separate places. If that port needs settting, with code rather than config files, it is just done in one place.
+command line when using them. I prefer to use a REPL at development time, and using Clojure tools.deps `-X` I can execute required build/test functions at CI stage. As a result of that, this setup uses no `shadow-cljs.edn` file or Kaocha `tests.edn` file: all config is done in Clojure code. Note that this is not a hack: as well as a CLI these tools have a Clojure API. This is handy for portability, but also for dynamic changes. For example, Kaocha-cljs requires
+that the funnel port number be referred to from 3 separate places. To change that port from the default, here we just need to bind a variable. Simples.  
 
 This project can be used as-is or just as inspiration or a starter template for your builds. For example I used to use a similar no-config-file setup with Figwheel. 
 
-It is quite common that I come across Cljs libraries on Github with no running CI or even tests that I can run locally. I don't know but maybe it has been too much effort to set up... this project might help there.
+It is quite common that I come across Cljs libraries on Github with no running CI or even tests that I can run locally. Or if I can run the tests locally and they fail, how do I fire up a cljs REPL and work out what went wrong? I don't know but maybe it has been too much effort for the authors to set up or document... this project might help there.
 
 # Usage
 
 See examples dir for:
 
-* an example cljs lib with `Github Actions` setup.
-* an example cljs app with test, devcards and release build setup 
+* an example cljs lib with `Github Actions` testing setup.
+* an example cljs app with testing and release build setup 
 
 ## Setup
 
@@ -47,12 +46,15 @@ Add `tiado-cljs2` as a git dep in a tools.deps project.
 
 ; start watch of cljs tests
 (util/browser-test-build :watch {})
-; open the url printed to console to see kaocha testing page
+; open the url printed to console to see kaocha/chui testing page
 
-; run cljs tests from clj REPL
+; run cljs tests (currently just headless Chrome) from clj REPL
 (util/run-tests)
 ; start a cljs repl session in the test build. :cljs/quit to exit
+; this works from a regular nREPL or e.g. with Cursive. It seems like Vim and Emacs users have to do some further backflips (see for example [lambdaisland REPL guide](https://lambdaisland.com/guides/clojure-repls/clojure-repls#orge15e92d))
 (util/repl :browser-test-build)
+
+see `.github/workflows` for examples of running these same tests in Github Actions
 
 ```
 
@@ -69,13 +71,7 @@ Add `tiado-cljs2` as a git dep in a tools.deps project.
 ## Rationale continued..
 
 * Stay DRY wrt any config or build related code within and across projects
-
-* I would rather avoid: 
-
-- separate processes/jvms for things that can run in one jvm (i.e. no separate Funnel process) 
-- yet more config files 
-   - prefer clojure code to config files, so no `shadow-cljs.edn` or kaocha `tests.edn`
-   - package.json and package-lock.json written to by shadow only - use deps.cljs for npm deps 
+* avoid separate processes/jvms for things that can run in one jvm (i.e. no separate Funnel process or shadow server jvm) 
 
 ### REPL first
 
@@ -96,3 +92,11 @@ I like having the ability to do everything from a Clojure REPL. For example,
 
 Add more testing targets and build setups so that this can be used to test any Clojurescript library
 such as discussed in the [Library Consumers Test](https://github.com/henryw374/clojurescript-library-consumers-test)
+
+## License
+
+Copyright © 2022 [Widd Industries](http://widdindustries.com/about/)
+
+Distributed under the [MIT License](/LICENSE)
+
+
