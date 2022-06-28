@@ -43,7 +43,15 @@
                 {:root "classpath:public"}}
      }))
 
-(defn npm-i [opts]
+(defn npm-i 
+  "the call to shadow `npm-deps/main` installs deps.cljs dependencies iff they are not already in package.json. 
+  
+  If the version in package.json is different to deps.cljs, the package.json version remains
+  untouched. This is the normal shadow-cljs behaviour.
+  
+  Additionally `npm i` is called to install anything else in package.json but not in the classpath
+  "
+  [opts]
   (npm-deps/main opts {})
   @(process/process ["npm" "i"]))
 
