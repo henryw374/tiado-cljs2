@@ -1,5 +1,9 @@
 {:paths   ["src"]
  :aliases {:dev {:extra-deps  
-                 {com.widdindustries/tiadough { ; could have this in alias in .clojure/deps.edn
-                                                            :local/root "../.."}}
+                 {com.widdindustries/tiado-cljs2 { ; could have this in alias in .clojure/deps.edn
+                                                            :local/root "../.."
+                                                  ;uncomment these, comment out local/root
+                                                  ;:git/url "https://github.com/henryw374/tiado-cljs2"
+                                                  ;:git/sha "0e3949451c0d40b15cf1aafaf0bcc57add7538bf"
+                                                  }}
                  :extra-paths ["dev" "test" "web-target"]}}} 

@@ -1,6 +1,10 @@
 {:paths   ["resources" "src"]
  :aliases {:dev {:extra-deps  
                  {com.widdindustries/tiado-cljs2 { ; could have this in alias in .clojure/deps.edn
-                                                            :local/root "../.."}
+                                                            :local/root "../.."
+                                                  ;uncomment these, comment out local/root
+                                                  ;:git/url "https://github.com/henryw374/tiado-cljs2"
+                                                  ;:git/sha "0e3949451c0d40b15cf1aafaf0bcc57add7538bf"
+                                                  }
                   reagent/reagent {:mvn/version "1.1.1"}}
                  :extra-paths ["dev" "test" "web-target"]}}} 
