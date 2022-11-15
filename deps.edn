@@ -1,14 +1,11 @@
-{:deps    {thheller/shadow-cljs      {:mvn/version "2.19.5"
+{:deps    {thheller/shadow-cljs      {:mvn/version "2.20.10"
                                       ;:local/root "../services/shadow-cljs"
                                       ;/Users/widdh/dev/services/shadow-cljs/target/aot/shadow-cljs-2.19.0-aot.jar
                                       }
-           lambdaisland/kaocha-cljs2 {:mvn/version "0.0.35"}
+           lambdaisland/kaocha-cljs2 {:mvn/version "0.1.58"}
            lambdaisland/kaocha       {:mvn/version "1.63.998"}
-           com.lambdaisland/glogi    {:mvn/version "1.1.144"}
-           lambdaisland/chui-remote  {:mvn/version "1.1.192"}
-           lambdaisland/chui-ui      {:mvn/version "1.1.192"}
            lambdaisland/funnel       {:mvn/version "1.4.71"}
-           binaryage/devtools        {:mvn/version "1.0.5"}
-           babashka/process          {:mvn/version "0.1.2"}}
+           binaryage/devtools        {:mvn/version "1.0.6"}
+           babashka/process          {:mvn/version "0.3.11"}}
  :aliases {:dev {:extra-paths ["test"]}}}
 

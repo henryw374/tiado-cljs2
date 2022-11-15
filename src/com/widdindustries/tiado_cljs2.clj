@@ -165,7 +165,7 @@
     )
   ((get compile-fns compile-mode)
    (browser-test-config) opts)
-  (println "for tests, open " test-url))
+  (println "for tests, open " test-url "/index.html"))
 
 (defn run-tests []
   (let [result-fut
@@ -224,6 +224,21 @@
   (build-report/generate build
     {:report-file file-name
      :inline true}))
+
+(comment 
+  
+  server/stop!
+  
+  (defn dev-http []
+    (-> @shadow.cljs.devtools.server.runtime/instance-ref
+        :dev-http deref :servers first))
+  
+  (-> (dev-http))
+
+  (-> (dev-http) :instance :handler-state :managers
+      second ;first 
+      (.getResource "index.html"))
+  )
 
 
 
