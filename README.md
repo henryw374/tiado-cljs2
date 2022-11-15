@@ -25,6 +25,13 @@ See examples dir for:
 
 ## Setup
 
+One option is to copy something from the examples directory. If doing that, edit the contents of the 
+deps.edn file to point to the latest git/sha of tiado-cljs2.
+
+To create from scratch, follow these instructions:
+
+Within a directory containing a deps.edn file:
+
 ```
 mkdir -p web-target/public
 touch web-target/public/.gitkeep
@@ -38,7 +45,13 @@ it :
 * contains a `public` dir.
 * exists at REPL startup
 
-Add `tiado-cljs2` as a git dep in a tools.deps project and as `web-target` (or equiv) to the `:paths`. 
+Add `tiado-cljs2` as a git dep in a tools.deps project and add `web-target` (or equiv) to the `:paths` / `:extra-paths`.
+
+The tiado-cljs2 dep includes Clojurescript (via shadow-cljs) so if that is already in your deps.edn, you should remove it, since Shadow versions are tightly coupled to Clojurescript versions.
+
+
+Create a Clojure dev namespace from where you will drive actions such as stop/start/release etc with 
+contents shown below:
 
 ```clojure 
 
