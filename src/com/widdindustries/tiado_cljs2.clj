@@ -16,7 +16,7 @@
 (def funnel-port 9010)
 (def funnel-uri (str "ws://localhost:" funnel-port))
 (def shadow-local (str "http://localhost:" dev-server-port))
-(def test-url (str shadow-local "/browser-test"))
+(def test-url (str shadow-local "/browser-test/index.html"))
 
 (defonce funnel-server nil)
 
@@ -165,7 +165,7 @@
     )
   ((get compile-fns compile-mode)
    (browser-test-config) opts)
-  (println "for tests, open " test-url "/index.html"))
+  (println "for tests, open " test-url))
 
 (defn run-tests []
   (let [result-fut
