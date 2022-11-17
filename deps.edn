@@ -1,4 +1,4 @@
-{:deps    {thheller/shadow-cljs      {:mvn/version "2.20.10"
+{:deps    {thheller/shadow-cljs      {:mvn/version "2.20.12"
                                       ;:local/root "../services/shadow-cljs"
                                       ;/Users/widdh/dev/services/shadow-cljs/target/aot/shadow-cljs-2.19.0-aot.jar
                                       }

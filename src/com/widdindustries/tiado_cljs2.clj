@@ -16,7 +16,7 @@
 (def funnel-port 9010)
 (def funnel-uri (str "ws://localhost:" funnel-port))
 (def shadow-local (str "http://localhost:" dev-server-port))
-(def test-url (str shadow-local "/browser-test/index.html"))
+(def test-url (str shadow-local "/browser-test/"))
 
 (defonce funnel-server nil)
 

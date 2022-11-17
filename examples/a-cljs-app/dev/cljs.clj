@@ -23,7 +23,7 @@
 
   ; start compiling and watching the app
   (app-watch)
-  ; visit http://localhost:9000/index.html 
+  ; visit http://localhost:9000/ 
   (util/repl)
 
   ; start up live-compilation of tests
