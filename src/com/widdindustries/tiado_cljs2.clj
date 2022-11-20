@@ -16,7 +16,7 @@
 (def funnel-port 9010)
 (def funnel-uri (str "ws://localhost:" funnel-port))
 (def shadow-local (str "http://localhost:" dev-server-port))
-(def test-url (str shadow-local "/browser-test/"))
+(def test-url (str shadow-local "/browser-test/index.html"))
 
 (defonce funnel-server nil)
 
@@ -40,7 +40,7 @@
     {:deps     {:aliases [:client :dev]}
      :http     {:port 9020}
      :dev-http {dev-server-port
-                {:root "classpath:public"}}
+                {:root "classpath:public" :use-index-files true}}
      }))
 
 (defn npm-i 
