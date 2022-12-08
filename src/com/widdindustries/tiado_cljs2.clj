@@ -225,6 +225,9 @@
     {:report-file file-name
      :inline true}))
 
+(defn show-npm-deps []
+  (clojure.pprint/print-table (npm-deps/get-deps-from-classpath)))
+
 (comment 
   
   server/stop!

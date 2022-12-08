@@ -2,4 +2,4 @@
   (:require [clojure.test :refer [deftest is testing]]))
 
 (deftest hello-test 
-  (is (= 1 1 )))
+  (is (= 1 1)))

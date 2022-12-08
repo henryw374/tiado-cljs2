@@ -32,6 +32,10 @@
   (util/run-tests)
   ; start a cljs repl session in the test build. :cljs/quit to exit
   (util/repl :browser-test-build)
+  
+  (util/show-npm-deps)
+  
+  
 
   ; do the release build
   (app-release)
@@ -39,6 +43,4 @@
   (util/build-report (app-config) "build-report.html")
 
   ; you can stop/start etc as required
-  (util/stop-server)
-
-  )
+  (util/stop-server))
