@@ -23,7 +23,7 @@ To use this library you will need `npm` and clojure CLI (`clj`)
 ## Quick start Clojurescript app
 
 * git clone https://github.com/henryw374/tiado-cljs2.git
-* cd -r tiado-cljs2/examples/a-cljs-app
+* cd tiado-cljs2/examples/a-cljs-app
 * `clj` 
 * in started REPL: `(require 'cljs)`
 * `(cljs/test-watch)`
