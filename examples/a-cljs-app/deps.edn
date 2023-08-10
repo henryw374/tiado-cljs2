@@ -1,12 +1,7 @@
-{:paths   ["resources" "src"]
- :aliases {:dev {:extra-deps  
-                 {com.widdindustries/tiado-cljs2 
-                  { 
-                    ;if copying this example, uncomment these, comment out local/root
-                    ;:git/url "https://github.com/henryw374/tiado-cljs2"
-                    ;:git/sha "whatever-the-latest-is"
-                   ; ... and comment out the below
-                   :local/root "../.."
-                    }
-                  reagent/reagent {:mvn/version "1.1.1"}}
-                 :extra-paths ["dev" "test" "web-target"]}}} 
+{:paths ["src " "resources" "dev" "test" "web-target"]
+ :deps
+ {
+  com.widdindustries/tiado-cljs2 {:local/root "../.."}
+  ; if moving this example elsewhere, replace the above :local/root with :git/url "https://github.com/henryw374/tiado-cljs2.git" :git/sha "whatever-the-latest-is"
+  reagent/reagent {:mvn/version "1.1.1"}}
+ } 

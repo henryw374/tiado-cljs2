@@ -2,7 +2,8 @@
                                       ;:local/root "../services/shadow-cljs"
                                       ;/Users/widdh/dev/services/shadow-cljs/target/aot/shadow-cljs-2.19.0-aot.jar
                                       }
-           lambdaisland/kaocha-cljs2 {:mvn/version "0.1.58"}
+           lambdaisland/kaocha-cljs2 {:mvn/version "0.2.72"}
+           lambdaisland/chui {:mvn/version "1.2.205"}
            lambdaisland/kaocha       {:mvn/version "1.63.998"}
            lambdaisland/funnel       {:mvn/version "1.4.71"}
            binaryage/devtools        {:mvn/version "1.0.6"}

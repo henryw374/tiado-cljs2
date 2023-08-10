@@ -18,15 +18,29 @@ It is quite common that I come across Cljs libraries on Github with no running C
 
 # Usage
 
-See examples dir for:
+To use this library you will need `node` and clojure CLI (`clj`)
 
-* an example cljs lib with `Github Actions` testing setup.
-* an example cljs app with testing and release build setup 
+## Quick start Clojurescript app
 
-## Setup
+* git clone https://github.com/henryw374/tiado-cljs2.git
+* cd -r tiado-cljs2/examples/a-cljs-app
+* `clj` 
+* in started REPL: `(require 'cljs)`
+* `(cljs/test-watch)`
+* follow printed instructions to see testing page and run a test
+* `(cljs/app-watch)`
+* visit http://localhost:9000/ to see the app
+* see the comment block in cljs.clj for examples of how to connect a repl. stop/start builds and so on
 
-One option is to copy something from the examples directory. If doing that, edit the contents of the 
-deps.edn file to point to the latest git/sha of tiado-cljs2.
+If you want to keep developing on the example app long-term, move the tiado-cljs2/examples/a-cljs-app directory to your normal dev folder and edit its deps.edn file to point to tiado-cljs2 on github
+
+## Quick start Clojurescript library
+
+Similar to above, but contents in `examples/a-cljs-library`
+
+Also note that this example has an existing `Github Actions` testing setup.
+
+## Add tiado-cljs2 build to an existing Repo
 
 To create from scratch, follow these instructions:
 
