@@ -18,7 +18,7 @@ It is quite common that I come across Cljs libraries on Github with no running C
 
 # Usage
 
-To use this library you will need `node` and clojure CLI (`clj`)
+To use this library you will need `npm` and clojure CLI (`clj`)
 
 ## Quick start Clojurescript app
 
