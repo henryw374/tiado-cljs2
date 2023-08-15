@@ -1,4 +1,4 @@
-{:paths ["src " "resources" "dev" "test" "web-target"]
+{:paths ["src" "resources" "dev" "test" "web-target"]
  :deps
  {
   com.widdindustries/tiado-cljs2 {:local/root "../.."}
