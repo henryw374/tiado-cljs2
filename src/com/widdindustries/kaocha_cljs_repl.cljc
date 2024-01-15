@@ -3,4 +3,4 @@
      :cljs (:require-macros [com.widdindustries.kaocha-cljs-repl :refer [run-all]])))
 
 (defmacro run-all []
-  (util/run-tests))
+  (util/run-tests-headless nil))

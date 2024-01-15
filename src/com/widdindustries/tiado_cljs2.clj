@@ -163,7 +163,8 @@
     <meta charset=\"utf-8\">
     </head>
     <body>
-    <script src=\"/browser-test/js/test.js\"></script><script>kaocha.cljs2.shadow_runner.init();</script></body></html>"
+    <script src=\"/browser-test/js/test.js\"></script>
+    <script>kaocha.cljs2.shadow_runner.init();</script></body></html>"
     )
   ((get compile-fns compile-mode)
    (browser-test-config) opts)
