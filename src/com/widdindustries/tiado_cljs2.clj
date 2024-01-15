@@ -42,7 +42,7 @@
     {:deps     {:aliases [:client :dev]}
      :http     {:port 9020}
      :dev-http {dev-server-port
-                {:root "classpath:public" :use-index-files true}}
+                {:root "classpath:public" :use-index-files false}}
      }))
 
 (defn npm-i
