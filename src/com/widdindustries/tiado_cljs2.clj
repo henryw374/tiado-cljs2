@@ -5,12 +5,14 @@
             [shadow.cljs.devtools.server :as server]
             [shadow.cljs.devtools.server.npm-deps :as npm-deps]
             [shadow.cljs.build-report :as build-report]
-    ;[clojure.java.shell :as sh]
+            [io.pedestal.log :as log]
             [babashka.process :as process]
             [lambdaisland.funnel :as funnel]
             [shadow.cljs.devtools.config :as config]
             [kaocha.repl]
-            [clojure.string :as string]))
+            [clojure.string :as string])
+  (:import [com.microsoft.playwright Playwright]
+           (java.util.function Consumer)))
 
 (def dev-server-port 9000)
 (def funnel-port 9010)
@@ -31,7 +33,7 @@
     nil
     (when-let [server (funnel/start-server (funnel/websocket-server
                                              {:state (atom {})
-                                              :port funnel-port}))]
+                                              :port  funnel-port}))]
       (funnel/init-logging 1 nil)
       (alter-var-root #'funnel-server (constantly server)))))
 
@@ -43,7 +45,7 @@
                 {:root "classpath:public" :use-index-files true}}
      }))
 
-(defn npm-i 
+(defn npm-i
   "the call to shadow `npm-deps/main` installs deps.cljs dependencies iff they are not already in package.json. 
   
   If the version in package.json is different to deps.cljs, the package.json version remains
@@ -82,8 +84,8 @@
       (io/resource)))
 
 (defn browser-app-config [& {:keys [watch-dir asset-path]
-                             :or {watch-dir "web-target/public"
-                                  asset-path "/cljs-out"}}]
+                             :or   {watch-dir  "web-target/public"
+                                    asset-path "/cljs-out"}}]
   {:build-id        :app-dev
    :target          :browser
    :output-dir      (str watch-dir asset-path)
@@ -92,7 +94,7 @@
                      :preloads  (cond-> []
                                   (cljs-ns-available? 'devtools.preload)
                                   (conj 'devtools.preload))}
-   :asset-path asset-path})
+   :asset-path      asset-path})
 
 (defn clean-dir [d]
   (process/check (process/process ["rm" "-rf" d])))
@@ -135,21 +137,21 @@
    (api/repl build-name)))
 
 (defn browser-test-config []
-  {:build-id :browser-test-build
-   :target :browser-test
+  {:build-id         :browser-test-build
+   :target           :browser-test
    :compiler-options {:data-readers true}
-   :runner-ns 'kaocha.cljs2.shadow-runner
-   :test-dir "web-target/public/browser-test"
-   :asset-path "/browser-test/js"
-   :build-options {}
-   :closure-defines {'lambdaisland.funnel-client/FUNNEL_URI funnel-uri}
-   :devtools {:preloads (cond-> ['lambdaisland.chui.remote ]
-                          (cljs-ns-available? 'devtools.preload)
-                          (conj 'devtools.preload))}})
+   :runner-ns        'kaocha.cljs2.shadow-runner
+   :test-dir         "web-target/public/browser-test"
+   :asset-path       "/browser-test/js"
+   :build-options    {}
+   :closure-defines  {'lambdaisland.funnel-client/FUNNEL_URI funnel-uri}
+   :devtools         {:preloads (cond-> ['lambdaisland.chui.remote]
+                                  (cljs-ns-available? 'devtools.preload)
+                                  (conj 'devtools.preload))}})
 
 (def compile-fns
-  {:watch watch
-   :once api/compile*
+  {:watch   watch
+   :once    api/compile*
    :release api/release*})
 
 (defn browser-test-build [compile-mode opts]
@@ -167,43 +169,47 @@
    (browser-test-config) opts)
   (println "for tests, open " test-url))
 
-(defn run-tests []
-  (let [result-fut
-        (future
-          (kaocha.repl/run
-            :browser-tests
-            #:kaocha{:tests
-                     [#:kaocha.testable{:id   :browser-tests
-                                        :type :kaocha.type/cljs2}]}))
-        result (deref result-fut 10000 ::timeout)]
-    (if (= ::timeout result)
-      (throw (Exception. "timeout waiting for test result"))
-      result)))
 
-(def ^:dynamic *chrome-command*
-  (case (System/getProperty "os.name")
-    "Mac OS X" "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
-    "chrome"))
+(defn run-tests-headless [_suite-name]
+  ;(chrome-headless/kill-all-chromes)
+  
+  (with-open [playwright (Playwright/create)
+              browser (-> playwright
+                          (.chromium)
+                          (.launch))]
+    (let [page (-> browser
+                   (.newContext)
+                   (.newPage))
+          messages (atom [])]
 
-(defn chrome-headless-proc [url]
-  (process/process [*chrome-command* "--disable-gpu"
-               "--remote-debugging-socket-fd=0"
-               "--headless" 
-               "--remote-debugging-port=0"
-               "--no-sandbox" "--enable-logging=stderr" "--v=1"
-               url]
-    {:out *out*
-     :err *out*}))
+      (-> page (.onConsoleMessage
+                 (reify Consumer
+                   (accept [_ msg]
+                     (swap! messages conj msg)
+                     (log/info :console {:type (.type msg) :text (.text msg) :location (.location msg)})))))
+      (-> page (.navigate test-url))
+      #_(let [kaocha-options (if true ; (is-gitlab?)
+                               {:kaocha/plugins                      [:kaocha.plugin/junit-xml]
+                                :koocha.plugin.junit-xal/target-file (str (name _suite-name) ".xml")}
+                               {})])
+      (try
 
-(defn compile-and-run-tests-headless* []
-  (let [proc (chrome-headless-proc test-url)]
-    (Thread/sleep 2000)
-    (try
-      (run-tests)
-      (finally
-        ;(println "killing pid " (.pid chrome))
-        (process/destroy proc)
-        ))))
+        (let [result (kaocha.repl/run
+                       :browser-tests
+                       #:kaocha{:tests
+                                [#:kaocha.testable{:id   :browser-tests
+                                                   :type :kaocha.type/cljs2}]})]
+          (println "ran tests . messages " (count @messages))
+          result)
+        (catch Exception e
+          (println (.getMessage e)))))))
+
+(comment
+  (start-server)
+  (browser-test-build :once {})
+  (run-tests-headless nil)
+
+  )
 
 (defn kaocha-exit-if-fail [result]
   (if (or (some pos? ((juxt :kaocha.result/error :kaocha.result/fail :kaocha.result/pending)
@@ -213,46 +219,35 @@
 
 (defn tests-ci-shadow [{:keys [compile-mode]}]
   (start-server)
+  ;(browser-test-build :once {})
   (browser-test-build compile-mode {})
   (try
-    (kaocha-exit-if-fail (compile-and-run-tests-headless*))
-    (catch Exception e 
+    (kaocha-exit-if-fail (run-tests-headless nil))
+    (catch Exception e
       (println e)
       (System/exit 1))))
 
 (defn build-report [build file-name]
   (build-report/generate build
     {:report-file file-name
-     :inline true}))
+     :inline      true}))
 
 (defn show-npm-deps []
   (clojure.pprint/print-table (npm-deps/get-deps-from-classpath)))
 
-(comment 
-  
+(comment
+
+  (tests-ci-shadow {:compile-mode :once})
+
   server/stop!
-  
+
   (defn dev-http []
     (-> @shadow.cljs.devtools.server.runtime/instance-ref
         :dev-http deref :servers first))
-  
+
   (-> (dev-http))
 
   (-> (dev-http) :instance :handler-state :managers
       second ;first 
       (.getResource "index.html"))
   )
-
-
-
-
-
-
-
-
-
-
-
-
-
-
