@@ -24,7 +24,7 @@ jobs:
       #  run: make test-clj
         
       - name: Install Chrome  
-        uses: browser-actions/setup-chrome@latest
+        uses: browser-actions/setup-chrome@97.0
         
       - name: Run example app tests  
         run: cd examples/a-cljs-app && make test-cljs-shadow && cd -        

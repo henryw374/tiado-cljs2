@@ -7,6 +7,7 @@
            lambdaisland/kaocha       {:mvn/version "1.63.998"}
            lambdaisland/funnel       {:mvn/version "1.4.71"}
            binaryage/devtools        {:mvn/version "1.0.6"}
-           babashka/process          {:mvn/version "0.3.11"}}
+           babashka/process          {:mvn/version "0.3.11"}
+           clj-chrome-devtools/clj-chrome-devtools {:mvn/version "20220405"}}
  :aliases {:dev {:extra-paths ["test"]}}}
 
