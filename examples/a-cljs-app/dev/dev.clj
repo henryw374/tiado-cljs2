@@ -1,4 +1,4 @@
-(ns cljs
+(ns dev
   (:require [com.widdindustries.tiado-cljs2 :as util]))
 
 (defn test-watch []
