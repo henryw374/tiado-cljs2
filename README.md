@@ -25,12 +25,12 @@ To use this library you will need `npm` and clojure CLI (`clj`)
 * git clone https://github.com/henryw374/tiado-cljs2.git
 * cd tiado-cljs2/examples/a-cljs-app
 * `clj` 
-* in started REPL: `(require 'cljs)`
-* `(cljs/test-watch)`
+* in started REPL: `(require 'dev)`
+* `(dev/test-watch)`
 * follow printed instructions to see testing page and run a test
-* `(cljs/app-watch)`
+* `(dev/app-watch)`
 * visit http://localhost:9000/ to see the app
-* see the comment block in cljs.clj for examples of how to connect a repl. stop/start builds and so on
+* see the comment block in dev.clj for examples of how to connect a repl. stop/start builds and so on
 
 If you want to keep developing on the example app long-term, move the tiado-cljs2/examples/a-cljs-app directory to your normal dev folder and edit its deps.edn file to point to tiado-cljs2 on github
 
